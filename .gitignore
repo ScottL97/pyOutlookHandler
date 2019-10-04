@@ -1,0 +1,17 @@
+# 测试用
+test/
+*.xlsx
+
+# python解释器缓存文件
+__pycache__
+
+# 附件目录
+attachments/
+
+# 日志目录
+log/
+
+# 构建exe产生文件
+build/
+dist/
+*.spec
