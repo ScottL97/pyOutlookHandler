@@ -57,6 +57,13 @@ def process_xlsx(modelpath, xlsx):
                         worksheet.row_values(i)[15], modelsheet.row_values(i)[3], MODIFY)
 
 def doxlsxHandler():
+    # 创建日志目录
+    if not os.path.isdir('logs'):
+        os.mkdir('logs')
+    # 写入日志分隔符
+    with open('logs\\' + time.strftime('%Y%m%d', time.localtime()) + '.log', 'a', encoding='utf-8') as log:
+        log.write('---------------------------------%s---------------------------------\n' % \
+        time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     modelpath = os.path.abspath('.')
     # 获取表格模板文件
     for file in os.listdir(modelpath):
@@ -73,9 +80,7 @@ def doxlsxHandler():
             print('--------------------------------------------------------------------------------------')
 
 def addlog(name, explaination, comment, date, logtype):
-    # 创建日志目录
-    if not os.path.isdir('logs'):
-        os.mkdir('logs')
+    
     # 操作记录变量
     record = ""
     # 格式化操作记录
@@ -101,7 +106,7 @@ def addlog(name, explaination, comment, date, logtype):
         # 输出操作记录
         print(record)
         # 写入日志文件
-        with open('logs\\' + time.strftime('%Y/%m/%d %H:%M:%S', time.localtime()) + '.log', 'a', encoding='utf-8') as log:
+        with open('logs\\' + time.strftime('%Y%m%d', time.localtime()) + '.log', 'a', encoding='utf-8') as log:
             log.write(record + '\n')
 
 if __name__ == '__main__':
