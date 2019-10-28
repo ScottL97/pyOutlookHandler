@@ -2,6 +2,7 @@
 import os
 import re
 import sys
+import time
 import win32com.client
 import win32timezone
 from datetime import datetime
@@ -32,13 +33,11 @@ def getAttachments(accountname, subjectword, since, attype):
         for message in messages:
             # 筛选三天内的邮件
             if hasattr(message, 'ReceivedTime'):
-                strdate = str(message.ReceivedTime)[:10] # 接收日期字符串
-                receivedate = datetime.strptime(strdate, '%Y-%m-%d') # 将日期字符串转为日期类型
-                nowdate = datetime.now() # 获取当前日期
-                # print(str(nowdate - receivedate).split(' ', 1)) # ['3', 'days, 18:19:43.145558']
-                daysbetween = str(nowdate - receivedate).split(' ', 1)[0] # 收件日期距今天数
+                nowsec = time.time() # 现在的秒数（距1970-1-1）
+                recvsec = time.mktime(datetime.strptime(str(message.ReceivedTime)[:10], '%Y-%m-%d').timetuple()) # 将收件日期转换成秒
+                daysbetween = (nowsec - recvsec)/(24 * 60 * 60) # 距今天数
                 # 筛选since天内的邮件
-                if int(daysbetween) < since: 
+                if int(daysbetween) <= since: 
                     if hasattr(message, 'Subject'):
                         # 筛选主题带有subjectword的邮件
                         matchObj = re.search(r'.*' + subjectword + '.*', message.Subject) 
@@ -59,14 +58,16 @@ def getAttachments(accountname, subjectword, since, attype):
                                         str(tmpnum) + ').' + attype
                                     print('[Sender]: %s' % message.SenderName)
                                     print('[Subject]: %s' % message.Subject)
-                                    print('[Date]: %s' % strdate)
-                                    print('[Since]: %s' % daysbetween + "天前")
+                                    print('[Date]: %s' % str(message.ReceivedTime)[:10])
+                                    print('[Since]: %s' % int(daysbetween) + "天前")
                                     print('[Attachment]: %s' % att)
                                     print('[SaveAs]: %s' % tmpfilename)
                                     print('-----------------------------------')
                                     att.SaveASFile(tmpfilename)
                                     tmpnum = tmpnum + 1
                                 i = i + 1
+                else:
+                    break
     else:
         print('[Get 0 messages]')
 
